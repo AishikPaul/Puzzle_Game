@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Puzzle Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 50px;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      gap: 5px;
+      justify-content: center;
+    }
+    .cell {
+      width: 100px;
+      height: 100px;
+      line-height: 100px;
+      font-size: 24px;
+      text-align: center;
+      border: 1px solid black;
+      background-color: #f0f0f0;
+      user-select: none;
+    }
+    .controls {
+      margin-top: 20px;
+    }
+    .button {
+      padding: 10px 20px;
+      margin: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Puzzle Game</h1>
+  <div class="grid" id="grid"></div>
+  <div class="controls">
+    <button class="button" onclick="moveDown()">Up</button>
+    <button class="button" onclick="moveUp()">Down</button>
+    <button class="button" onclick="moveRight()">Left</button>
+    <button class="button" onclick="moveLeft()">Right</button>
+  </div>
+
+  <script>
+    // Initialize the grid with shuffled numbers
+    let grid = [];
+    function initializeGrid() {
+      const numbers = ['1', '2', '3', '4', '5', '6', '7', '8', '-'];
+      for (let i = numbers.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [numbers[i], numbers[j]] = [numbers[j], numbers[i]];
+      }
+      grid = [];
+      while (numbers.length) {
+        grid.push(numbers.splice(0, 3));
+      }
+      renderGrid();
+    }
+
+    // Render the grid in the UI
+    function renderGrid() {
+      const gridContainer = document.getElementById('grid');
+      gridContainer.innerHTML = '';
+      grid.forEach(row => {
+        row.forEach(cell => {
+          const div = document.createElement('div');
+          div.className = 'cell';
+          div.textContent = cell;
+          gridContainer.appendChild(div);
+        });
+      });
+    }
+
+    // Find the empty cell
+    function findEmptyCell() {
+      for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+          if (grid[i][j] === '-') {
+            return { i, j };
+          }
+        }
+      }
+    }
+
+    // Move functions
+    function moveUp() {
+      const { i, j } = findEmptyCell();
+      if (i < 2) {
+        [grid[i][j], grid[i + 1][j]] = [grid[i + 1][j], grid[i][j]];
+        renderGrid();
+      }
+    }
+
+    function moveDown() {
+      const { i, j } = findEmptyCell();
+      if (i > 0) {
+        [grid[i][j], grid[i - 1][j]] = [grid[i - 1][j], grid[i][j]];
+        renderGrid();
+      }
+    }
+
+    function moveLeft() {
+      const { i, j } = findEmptyCell();
+      if (j < 2) {
+        [grid[i][j], grid[i][j + 1]] = [grid[i][j + 1], grid[i][j]];
+        renderGrid();
+      }
+    }
+
+    function moveRight() {
+      const { i, j } = findEmptyCell();
+      if (j > 0) {
+        [grid[i][j], grid[i][j - 1]] = [grid[i][j - 1], grid[i][j]];
+        renderGrid();
+      }
+    }
+
+    // Initialize the game
+    initializeGrid();
+  </script>
+</body>
+</html>
