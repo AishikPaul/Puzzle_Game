@@ -31,12 +31,38 @@
     }
     .controls {
       margin-top: 20px;
+      display: grid;
+      grid-template-columns: 100px 100px 100px;
+      grid-template-rows: 50px 50px;
+      gap: 5px;
+      justify-content: center;
     }
     .button {
       padding: 10px 20px;
-      margin: 5px;
       font-size: 16px;
       cursor: pointer;
+    }
+    .up {
+      grid-column: 2;
+      grid-row: 1;
+    }
+    .left {
+      grid-column: 1;
+      grid-row: 2;
+    }
+    .right {
+      grid-column: 3;
+      grid-row: 2;
+    }
+    .down {
+      grid-column: 2;
+      grid-row: 3;
+    }
+    .message {
+      margin-top: 20px;
+      font-size: 20px;
+      font-weight: bold;
+      color: green;
     }
   </style>
 </head>
@@ -44,11 +70,12 @@
   <h1>Puzzle Game</h1>
   <div class="grid" id="grid"></div>
   <div class="controls">
-    <button class="button" onclick="moveDown()">Up</button>
-    <button class="button" onclick="moveUp()">Down</button>
-    <button class="button" onclick="moveRight()">Left</button>
-    <button class="button" onclick="moveLeft()">Right</button>
+    <button class="button up" onclick="moveUp()">Up</button>
+    <button class="button left" onclick="moveLeft()">Left</button>
+    <button class="button right" onclick="moveRight()">Right</button>
+    <button class="button down" onclick="moveDown()">Down</button>
   </div>
+  <div id="message" class="message"></div>
 
   <script>
     // Initialize the grid with shuffled numbers
@@ -78,6 +105,7 @@
           gridContainer.appendChild(div);
         });
       });
+      checkCompletion();
     }
 
     // Find the empty cell
@@ -91,35 +119,48 @@
       }
     }
 
-    // Move functions
+    // Check if the puzzle is solved
+    function checkCompletion() {
+      const correctOrder = ['1', '2', '3', '4', '5', '6', '7', '8', '-'];
+      const currentOrder = grid.flat();
+      const messageDiv = document.getElementById('message');
+
+      if (JSON.stringify(currentOrder) === JSON.stringify(correctOrder)) {
+        messageDiv.textContent = '🎉 Congratulations! You solved the puzzle! 🎉';
+      } else {
+        messageDiv.textContent = ''; // Clear the message if the puzzle is not solved
+      }
+    }
+
+    // Reverse Move functions
     function moveUp() {
       const { i, j } = findEmptyCell();
-      if (i < 2) {
-        [grid[i][j], grid[i + 1][j]] = [grid[i + 1][j], grid[i][j]];
+      if (i > 0) {
+        [grid[i][j], grid[i - 1][j]] = [grid[i - 1][j], grid[i][j]]; // Swap with the cell below
         renderGrid();
       }
     }
 
     function moveDown() {
       const { i, j } = findEmptyCell();
-      if (i > 0) {
-        [grid[i][j], grid[i - 1][j]] = [grid[i - 1][j], grid[i][j]];
+      if (i < 2) {
+        [grid[i][j], grid[i + 1][j]] = [grid[i + 1][j], grid[i][j]]; // Swap with the cell above
         renderGrid();
       }
     }
 
     function moveLeft() {
       const { i, j } = findEmptyCell();
-      if (j < 2) {
-        [grid[i][j], grid[i][j + 1]] = [grid[i][j + 1], grid[i][j]];
+      if (j > 0) {
+        [grid[i][j], grid[i][j - 1]] = [grid[i][j - 1], grid[i][j]]; // Swap with the cell to the right
         renderGrid();
       }
     }
 
     function moveRight() {
       const { i, j } = findEmptyCell();
-      if (j > 0) {
-        [grid[i][j], grid[i][j - 1]] = [grid[i][j - 1], grid[i][j]];
+      if (j < 2) {
+        [grid[i][j], grid[i][j + 1]] = [grid[i][j + 1], grid[i][j]]; // Swap with the cell to the left
         renderGrid();
       }
     }
